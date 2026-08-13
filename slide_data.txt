@@ -1,0 +1,50 @@
+Slide 1: Key Contributions & Technical Impact
+🔹 Project & Technology Contributions
+
+Led Salesforce Migration: Successfully executed data migration across UAT, DR1, and DR2 environments; gained strong client trust.
+
+Production Planning: Coordinated cross-functional teams for production rollout; guided each team through task execution.
+
+Kafka Streaming Migration: Migrated the Westpac application to a Kafka + Cosmos DB architecture, completing full E2E testing and gaining client confidence.
+
+🔹 Technical Enhancements
+
+Resolved Cosmos DB connectivity and truststore issues with targeted code fixes.
+
+Designed Azure Key Vault solutions to eliminate hardcoded credentials.
+
+Delivered Kafka consumer logic for Cosmos writes and validated full streaming flow.
+
+🔹 Knowledge Sharing & Documentation
+
+Delivered KT on workstation setup, testing, and remediation steps.
+
+Authored Confluence pages for unit testing, NPS debugging, and certificate handling.
+
+Slide 2: Growth, Collaboration & Career Progression
+🔹 Collaboration & Leadership
+
+Partnered closely with clients to gather and validate test data.
+
+Maintained meticulous JIRA tracking, ensuring timeline accountability.
+
+Proactively studied legacy systems through Confluence reviews.
+
+Completed project goals aligned with:
+
+✅ Broadened industry experience
+
+✅ Explored new migration technologies
+
+✅ Strengthened leadership traits
+
+🔹 Certifications & Learning
+
+Achieved certifications in Azure, AWS, GCP, Databricks, and Snowflake.
+
+Actively contributing to the Sub Capability Group and planning further upskilling.
+
+🔹 Career Aspiration
+
+“I was on track for promotion to Associate Manager in Accenture India before relocating to Brisbane.
+Now, after four years without a promotion or hike, I’m seeking guidance on progressing to the next level in my journey with Accenture Australia.”
