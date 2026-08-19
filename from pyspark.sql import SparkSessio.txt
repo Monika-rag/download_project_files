@@ -1,0 +1,91 @@
+from pyspark.sql import SparkSession
+from datetime import datetime
+import struct
+import json
+import sys
+import adal
+import pyodbc
+
+# Create a SparkSession
+spark = SparkSession.builder \
+    .appName("Write SQL Data to CSV") \
+    .getOrCreate()
+
+# Define widgets (if you are running this on Databricks)
+dbutils.widgets.text("tbl_name", 'dbo.taskcombinedcosts', "Table Name")
+dbutils.widgets.text("raw_file_path", "raw/ODS/dbo.taskcombinedcosts", "Raw file path")
+dbutils.widgets.text("config_file_path", "/monika_test/config.json", "Config file path")
+
+tbl_name = dbutils.widgets.get("tbl_name")
+raw_file_path = dbutils.widgets.get("raw_file_path")
+config_file_path = dbutils.widgets.get("config_file_path")
+
+# Read the configuration values from the JSON file
+with open(config_file_path, 'r') as file:
+    config = json.load(file)
+
+# Extract connection details from the config
+jdbcURL = config['jdbcURL']
+tenantId = config['tenantId']
+authorityURL = config['authorityURL']
+resouceAppIdURI = config['resouceAppIdURI']
+servicePrincipalId = config['servicePrincipalId']
+sqlSecretScope = config['sqlSecretScope']
+sqlSecretKey = config['sqlSecretKey']
+sqlServerDetails = config['sqlServerDetails']
+sqlSourceDatabase = config['sqlSourceDatabase']
+
+authority = "https://login.windows.net/" + tenantId
+
+# Extract secret value based on scope and key
+client_secret = dbutils.secrets.get(scope=sqlSecretScope, key=sqlSecretKey)
+
+# Function to create connection with sql
+def getConnection():
+    context = adal.AuthenticationContext(authority)
+    newtoken = context.acquire_token_with_client_credentials(resouceAppIdURI, servicePrincipalId, client_secret)
+    connectionProperties = {"accessToken": newtoken.get('accessToken'), "hostNameInCertificate": "*.database.windows.net", "encrypt": "true"}
+    return connectionProperties
+
+properties = getConnection()
+databaseToken = properties.get('accessToken')
+SQL_COPT_SS_ACCESS_TOKEN = 1256
+tokenb = bytes(databaseToken, "UTF-8")
+
+exptoken = b''
+for i in tokenb:
+    exptoken += bytes({i})
+    exptoken += bytes(1)
+    tokenstruct = struct.pack("=i", len(exptoken)) + exptoken
+
+# Creating connection
+connString = "Driver={ODBC Driver 17 for SQL Server}; SERVER="+sqlServerDetails+";DATABASE="+sqlSourceDatabase+""
+conn = pyodbc.connect(connString, attrs_before={SQL_COPT_SS_ACCESS_TOKEN: tokenstruct})
+
+# Execution on select query to get the data from SQL
+sql_query = "SELECT * FROM "+tbl_name+" "
+cursor = conn.cursor()
+cursor.execute(sql_query)
+rows = cursor.fetchall()
+
+# to add timestamp
+dt = datetime.now()
+timestamp = dt.strftime("%Y-%m-%d %H:%M:%S")
+
+# Write data into a file
+output_file = raw_file_path + '_' + timestamp + '.csv'
+
+with open(output_file, 'w') as f:
+    # Write column headers
+    column_names = [column[0] for column in cursor.description]
+    f.write('|'.join(column_names) + '\n')
+
+    # Write data rows
+    for row in rows:
+        f.write('|'.join(str(value) for value in row) + '\n')
+
+# Close the connection
+conn.close()
+
+# Stop the SparkSession
+spark.stop()

@@ -1,0 +1,39 @@
+
+docker pull ghcr.io/dbt-labs/dbt-core:1.7.5
+docker images
+
+to remove image
+docker rmi b66ad20fe438
+docker rmi ghcr.io/dbt-labs/dbt-core:1.7.5
+docker ps -a
+
+docker run --network=host --mount type=bind,source=dbt-docker,target=/usr/app --mount type=bind,source=dbt-docker/profiles.yml,target=/root/.dbt/  cb75338457d6 ls
+
+
+"docker run \
+--network=host \
+--mount type=bind,source=dbt-docker,target=/usr/app \
+--mount type=bind,source=dbt-docker/profiles.yml,target=/root/.dbt/ \
+cb75338457d6 \
+ls"
+
+
+docker build -t ghcr.io/dbt-labs/dbt-core .
+
+
+docker run -it --rm -v C:/Users/m.raghuwanshi/dbt-docker:/usr/app ghcr.io/dbt-labs/dbt-core:1.7.5 init poc_demo
+
+docker run -it --name my_dbt_container ghcr.io/dbt-labs/dbt-core:1.7.5
+
+docker exec -it 3cceab25feac bash
+
+python -m pip install dbt-databricks
+
+https://broadspectrum.atlassian.net/wiki/spaces/DA/pages/1750499329/Data+Architecture+Platform
+
+
+docker build . -f Dockerfile --pull --tag apache/airflow:2.6.1
+
+
+dbt run --models silver_vnt_core_data_processing.sql
+
